@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import wx
 import wxtile
+import wxobjects
 class MainFrame(wx.Frame):
     def __init__(self):
         super().__init__(None, -1, 'Super Mario All Stars + Super Mario World')

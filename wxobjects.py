@@ -2,11 +2,11 @@
 import wx
 import wxtile
 class Physics(wx.Panel):
-    def __init__(self, parent, id, pos, size):
+    def __init__(self, parent, id, velocity = [0, 0], pos = None, size = None):
         super().__init__(parent, id)
-        self.SetPosition(pos)
-        self.SetSize(size)
-        self.velocity = [0, 0]
+        if pos is not None: self.SetPosition(pos)
+        if size is not None: self.SetSize(size)
+        self.velocity = velocity
         self.collides = set()
     def Collide(self, other):return False
     def Compare(self, other):
