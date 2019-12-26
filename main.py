@@ -70,7 +70,7 @@ class GameWindow(wx.Window):
         
 class GameFrame(wx.Frame):
     def __init__(self):
-        super().__init__(None, wx.ID_ANY, "Super Mario Allstars")
+        super().__init__(None, wx.ID_ANY, "Super Mario All-Stars")
 
         #self.SetBackgroundColour(wx.BLACK)
         
