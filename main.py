@@ -5,23 +5,46 @@ import PIL
 import PIL.Image
 import PIL.ImageDraw
 import math
+import json
+import time
 
 def PilImageToWxBitmap( myPilImage ):
     myWxImage = wx.Image( myPilImage.size[0], myPilImage.size[1] )
     myWxImage.SetData( myPilImage.convert( 'RGB' ).tobytes() )
     return myWxImage.ConvertToBitmap()
 
+def Merge(*dicts):
+    result = {}
+    for dict in dicts:
+        result.update(dict)
+    return result
+
 class Tileset:
     def __init__(self, folder):
         self.folder = Path(folder.resolve())
         self.tiles = {}
-        for json in self.folder.glob('*.json'):
-            self.tiles[json.stem] = PIL.Image.open(json.with_suffix('.png'))
+        for file in self.folder.glob('*.json'):
+            self.tiles[json.stem] = [json.load(file), PIL.Image.open(json.with_suffix('.png'))]
+
+class Physics:
+    def localpos(self, globalpos):
+        if self.parent == None:return globalpos
+        else:
+            parent = self.parent.globalpos()
+            return [globalpos[0] - parent[0], globalpos[1] - parent[1]]
+    def globalpos(self, localpos = None):
+        if localpos == None:localpos = self.location
+        if self.parent == None:return localpos + self.parent.globalpos()
+    def setparent(self, newparent):
+        globalpos = self.globalpos()
+        self.parent = newparent
+        self.location = self.localpos(globalpos)
 
 class TileLayer:
-    def __init__(self, meta, data):
-        self.location = [0, 0]
-        self.velocity = [0, 0]
+    def __init__(self, meta, data, location = [0, 0], velocity = [0, 0], parent = None):
+        self.location = localpos(location)
+        self.velocity = velocity
+        self.parent = parent 
         self.data = []
         for col in data:
             self.data.append([])
@@ -40,6 +63,33 @@ class TileLayer:
         for x in range(tileix, tileax + 1):
             for y in range(tileiy, tileay + 1):
                 self.data[x][y].draw(image)
+
+class Tile(TileLayer):
+    def __init__(self, name, properties, image, location = [0, 0], velocity = [0, 0], parent = None):
+        self.location = localpos(location)
+        self.velocity = velocity
+        self.parent = parent
+        self.frames = []
+        if 'per-frame' in properties:
+            width = image.size[0] / len(properties['per-frame'])
+            empty = data.copy()
+            del empty['per-frame']
+            for item in range(len(properties['per-frame'])):
+                full = Merge(properties['per-frame'][item], empty)
+                self.frames.append(Frame(full, image.crop((width * item, 0, width * item + width, image.size[1]))))
+        elif 'frames' in properties:
+            width = image.size[0] / properties['frames'])
+            empty = data.copy()
+            del empty['frames']
+            for item in range(properties['frames']):
+                full = empty.copy()
+                self.frames.append(Frame(full, image.crop((width * item, 0, width * item + width, image.size[1]))))
+        else: # one frame
+            self.frames.append(Frame(properties, image))
+        self.frame = 0
+        self.updated = time.time()
+                
+        
         
 class GameRenderer:
     def __init__(self):
