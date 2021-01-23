@@ -78,7 +78,7 @@ class Tile(TileLayer):
                 full = Merge(properties['per-frame'][item], empty)
                 self.frames.append(Frame(full, image.crop((width * item, 0, width * item + width, image.size[1]))))
         elif 'frames' in properties:
-            width = image.size[0] / properties['frames'])
+            width = image.size[0] / properties['frames']
             empty = data.copy()
             del empty['frames']
             for item in range(properties['frames']):
