@@ -24,7 +24,8 @@ class Tileset:
         self.folder = Path(folder.resolve())
         self.tiles = {}
         for file in self.folder.glob('*.json'):
-            self.tiles[json.stem] = [json.load(file), PIL.Image.open(json.with_suffix('.png'))]
+            with open(file) as f:data = json.load(f)
+            self.tiles[file.stem] = [data, PIL.Image.open(file.with_suffix('.png'))]
 
 class Physics:
     def localpos(self, globalpos):
