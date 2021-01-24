@@ -19,6 +19,10 @@ def Merge(*dicts):
         result.update(dict)
     return result
 
+class Frame:
+    def __init__(self, properties, image):
+        self.image = image
+
 class Tileset:
     def __init__(self, folder):
         self.folder = Path(folder.resolve())
@@ -41,7 +45,7 @@ class Physics:
         self.parent = newparent
         self.location = self.localpos(globalpos)
 
-class TileLayer:
+class TileLayer(Physics):
     def __init__(self, meta, data, location = [0, 0], velocity = [0, 0], parent = None):
         self.location = localpos(location)
         self.velocity = velocity
@@ -63,11 +67,12 @@ class TileLayer:
         tileay = math.floor(maxy / 16)
         for x in range(tileix, tileax + 1):
             for y in range(tileiy, tileay + 1):
-                self.data[x][y].draw(image)
+                self.data[x][y].draw(image, camera)
 
 class Tile(TileLayer):
     def __init__(self, name, properties, image, location = [0, 0], velocity = [0, 0], parent = None):
-        self.location = localpos(location)
+        self.parent = parent
+        self.location = self.localpos(location)
         self.velocity = velocity
         self.parent = parent
         self.frames = []
@@ -87,24 +92,42 @@ class Tile(TileLayer):
                 self.frames.append(Frame(full, image.crop((width * item, 0, width * item + width, image.size[1]))))
         else: # one frame
             self.frames.append(Frame(properties, image))
-        self.frame = 0
-        self.updated = time.time()
-                
-        
-        
+        if 'delay' in properties:
+            self.delay = properties['delay'] / 1000
+        else:
+            self.delay = 1
+    def draw(self, image, camera):
+        minx = camera[0]-int(self.location[0])
+        miny = camera[1]-int(self.location[1])
+        maxx = camera[0]-int(self.location[0]) + camera[2]
+        maxy = camera[1]-int(self.location[1]) + camera[3]
+        frame = self.frames[int(time.time() / self.delay) % len(self.frames)]
+        scaled = frame.image.resize((camera[4], camera[4]), PIL.Image.NEAREST)
+        image.paste(scaled, (-camera[0] * camera[4], -camera[1] * camera[4]))
+
+display = Tile('top', [], PIL.Image.open('graphics/SMW/grass/top.png'))
+
 class GameRenderer:
     def __init__(self):
         pass
-    def drawframe(self):
-        #image = PIL.Image.new("RGB", (256, 224), "#ff0000")
-        image = PIL.Image.open("./graphics/test/0.png")
+    def drawframe(self, frame):
+        size = frame.GetClientSize()
+        print(size)
+        tile = min(size[0] / 25, size[1] / 15)
+        fixed = (int(tile * 25), int(tile * 15))
+        image = PIL.Image.new("RGB", fixed, "#ff0000")
+        display.draw(image, (0, 0, fixed[0], fixed[1], int(tile)))
+        print(fixed, tile)
+        #image = PIL.Image.open("./graphics/test/0.png")
         return image
         
 class GameWindow(wx.Window):
-    def __init__(self, parent):
-        super().__init__(parent, wx.ID_ANY, size=(4, 3), style=wx.FULL_REPAINT_ON_RESIZE)
+    def __init__(self, parent, frame):
+        super().__init__(parent, wx.ID_ANY, size=(25, 15), style=wx.FULL_REPAINT_ON_RESIZE)
 
         self.renderer = GameRenderer()
+
+        self.frame = frame
         
         self.Bind(wx.EVT_PAINT, self.OnPaint)
 
@@ -114,7 +137,7 @@ class GameWindow(wx.Window):
         #dc.SetBrush(wx.Brush(wx.Colour("#ff0000")))
         #dc.DrawRectangle(-1, -1, self.GetClientSize().x + 2, self.GetClientSize().y + 2)
 
-        pilimage = self.renderer.drawframe().resize(self.GetClientSize())
+        pilimage = self.renderer.drawframe(frame).resize(self.GetClientSize())
         bitmap = PilImageToWxBitmap(pilimage)
 
         dc.DrawBitmap(bitmap, 0, 0)
@@ -127,7 +150,7 @@ class GameFrame(wx.Frame):
         
         panel = wx.Panel(self)
         
-        frame = GameWindow(panel)
+        frame = GameWindow(panel, self)
         
         sizer = wx.BoxSizer()
         sizer.Add(frame, 1, wx.SHAPED | wx.ALIGN_CENTER)
