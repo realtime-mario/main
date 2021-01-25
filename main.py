@@ -108,7 +108,9 @@ class Tile(TileLayer):
         maxy = camera[1]-int(self.location[1]) + camera[3]
         frame = self.frames[int(time.time() / self.delay) % len(self.frames)]
         scaled = frame.image.resize((camera[4], camera[4]), PIL.Image.NEAREST)
-        image.paste(scaled, (-camera[0] + camera[4] * self.location[0], -camera[1] + camera[4] * self.location[1]), scaled)
+        image.paste(scaled,
+                    (-camera[0] + camera[4] * self.location[0], -camera[1] + camera[4] * self.location[1]),
+                    scaled) # First is colour. Last is transparency. Default is full opacity everywhere.
 
 
 display = TileLayer(['NSMBU/grass/topleft', 'NSMBU/grass/topright', 'NSMBU/grass/bottomleft', 'NSMBU/grass/bottomright'],
