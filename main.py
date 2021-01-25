@@ -105,7 +105,7 @@ class Tile(TileLayer):
         scaled = frame.image.resize((camera[4], camera[4]), PIL.Image.NEAREST)
         image.paste(scaled, (-camera[0] * camera[4], -camera[1] * camera[4]))
 
-display = Tile('top', [], PIL.Image.open('graphics/SMW/grass/top.png'))
+display = Tile('top', [], PIL.Image.open('graphics/NSMBU/grass/topright.png'))
 
 class GameRenderer:
     def __init__(self):
