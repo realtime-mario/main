@@ -103,7 +103,7 @@ class Tile(TileLayer):
         maxy = camera[1]-int(self.location[1]) + camera[3]
         frame = self.frames[int(time.time() / self.delay) % len(self.frames)]
         scaled = frame.image.resize((camera[4], camera[4]), PIL.Image.NEAREST)
-        image.paste(scaled, (-camera[0] * camera[4], -camera[1] * camera[4]))
+        image.paste(scaled, (-camera[0] * camera[4], -camera[1] * camera[4]), scaled)
 
 display = Tile('top', [], PIL.Image.open('graphics/NSMBU/grass/topright.png'))
 
