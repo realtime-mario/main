@@ -46,7 +46,7 @@ class Physics:
         self.location = self.localpos(globalpos)
 
 class TileLayer(Physics):
-    def __init__(self, meta, data, location = [0, 0], velocity = [0, 0], parent = None):
+    def __init__(self, metaset, data, location = [0, 0], velocity = [0, 0], parent = None):
         self.location = localpos(location)
         self.velocity = velocity
         self.parent = parent 
@@ -107,14 +107,17 @@ class Tile(TileLayer):
 
 display = Tile('top', [], PIL.Image.open('graphics/NSMBU/grass/topright.png'))
 
+width = 25
+height = 15
+
 class GameRenderer:
     def __init__(self):
         pass
     def drawframe(self, frame):
         size = frame.GetClientSize()
         print(size)
-        tile = min(size[0] / 25, size[1] / 15)
-        fixed = (int(tile * 25), int(tile * 15))
+        tile = min(size[0] / width, size[1] / height)
+        fixed = (int(tile * width), int(tile * height))
         image = PIL.Image.new("RGB", fixed, "#ff0000")
         display.draw(image, (0, 0, fixed[0], fixed[1], int(tile)))
         print(fixed, tile)
@@ -123,7 +126,7 @@ class GameRenderer:
         
 class GameWindow(wx.Window):
     def __init__(self, parent, frame):
-        super().__init__(parent, wx.ID_ANY, size=(25, 15), style=wx.FULL_REPAINT_ON_RESIZE)
+        super().__init__(parent, wx.ID_ANY, size=(width, height), style=wx.FULL_REPAINT_ON_RESIZE)
 
         self.renderer = GameRenderer()
 
