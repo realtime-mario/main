@@ -47,24 +47,29 @@ class Physics:
 
 class TileLayer(Physics):
     def __init__(self, metaset, data, location = [0, 0], velocity = [0, 0], parent = None):
-        self.location = localpos(location)
+        self.parent = parent
+        self.location = self.localpos(location)
         self.velocity = velocity
-        self.parent = parent 
         self.data = []
-        for col in data:
+        for col in range(len(data)):
             self.data.append([])
-            for tile in col:
+            for tile in range(len(data[col])):
                 if data == -1:self.data[-1].append(None)
-                else:self.data[-1].append(Tile(self, metaset[col][1], metaset[col][0].tiles[metaset[col][1]]))
+                else:
+                    name = metaset[data[col][tile]]
+                    with open('graphics/{}.json'.format(name)) as f:
+                        properties = json.load(f)
+                    image = PIL.Image.open('graphics/{}.png'.format(name))
+                    self.data[-1].append(Tile(name, properties, image, [tile, col]))
     def draw(self, image, camera):
         minx = camera[0]-int(self.location[0])
         miny = camera[1]-int(self.location[1])
         maxx = camera[0]-int(self.location[0]) + camera[2]
         maxy = camera[1]-int(self.location[1]) + camera[3]
-        tileix = math.floor(minx / 16)
-        tileiy = math.floor(miny / 16)
-        tileax = math.floor(maxx / 16)
-        tileay = math.floor(maxy / 16)
+        tileix = max(int(minx / 16), 0)
+        tileiy = max(int(miny / 16), 0)
+        tileax = min(int(maxx / 16), len(self.data[0])-1)
+        tileay = min(int(maxy / 16), len(self.data)-1)
         for x in range(tileix, tileax + 1):
             for y in range(tileiy, tileay + 1):
                 self.data[x][y].draw(image, camera)
@@ -85,7 +90,7 @@ class Tile(TileLayer):
                 self.frames.append(Frame(full, image.crop((width * item, 0, width * item + width, image.size[1]))))
         elif 'frames' in properties:
             width = image.size[0] / properties['frames']
-            empty = data.copy()
+            empty = properties.copy()
             del empty['frames']
             for item in range(properties['frames']):
                 full = empty.copy()
@@ -103,9 +108,12 @@ class Tile(TileLayer):
         maxy = camera[1]-int(self.location[1]) + camera[3]
         frame = self.frames[int(time.time() / self.delay) % len(self.frames)]
         scaled = frame.image.resize((camera[4], camera[4]), PIL.Image.NEAREST)
-        image.paste(scaled, (-camera[0] * camera[4], -camera[1] * camera[4]), scaled)
+        image.paste(scaled, (-camera[0] + camera[4] * self.location[0], -camera[1] + camera[4] * self.location[1]), scaled)
 
-display = Tile('top', [], PIL.Image.open('graphics/NSMBU/grass/topright.png'))
+
+display = TileLayer(['NSMBU/grass/topleft', 'NSMBU/grass/topright', 'NSMBU/grass/bottomleft', 'NSMBU/grass/bottomright'],
+                    [[0, 1],
+                     [2, 3]])
 
 width = 25
 height = 15
@@ -115,12 +123,10 @@ class GameRenderer:
         pass
     def drawframe(self, frame):
         size = frame.GetClientSize()
-        print(size)
         tile = min(size[0] / width, size[1] / height)
         fixed = (int(tile * width), int(tile * height))
         image = PIL.Image.new("RGB", fixed, "#ff0000")
         display.draw(image, (0, 0, fixed[0], fixed[1], int(tile)))
-        print(fixed, tile)
         #image = PIL.Image.open("./graphics/test/0.png")
         return image
         
