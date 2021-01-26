@@ -9,6 +9,7 @@ import json
 import time
 import objects
 import tile
+import player
 
 def PilImageToWxBitmap( myPilImage ):
     myWxImage = wx.Image( myPilImage.size[0], myPilImage.size[1] )
@@ -21,7 +22,11 @@ def Merge(*dicts):
         result.update(dict)
     return result
 
-display = tile.TileLayer(['NSMBU/overworld/topleft', 'NSMBU/overworld/left', 'NSMBU/overworld/top', 'NSMBU/overworld/middle', 'NSMBU/overworld/right', 'NSMBU/overworld/topright', 'NSMBU/overworld/bottomrightconcave', 'NSMBU/overworld/bottomleftconcave'],
+sprites = []
+
+sprites.append(player.Mario([2, 13]))
+
+sprites.append(tile.TileLayer(['SMW/overworld/topleft', 'SMW/overworld/left', 'SMW/overworld/top', 'SMW/overworld/middle', 'SMW/overworld/right', 'SMW/overworld/topright', 'SMW/overworld/bottomrightconcave', 'SMW/overworld/bottomleftconcave'],
                     [[ 1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                      [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                      [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
@@ -47,7 +52,7 @@ display = tile.TileLayer(['NSMBU/overworld/topleft', 'NSMBU/overworld/left', 'NS
                      [ 3, 7, 4, 4, 4, 4, 5,-1,-1,-1,-1,-1,-1,-1,-1],
                      [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                      [ 4, 5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-                     ])
+                     ]))
 
 width = 25
 height = 15
@@ -60,7 +65,9 @@ class GameRenderer:
         tile = min(size[0] / width, size[1] / height)
         fixed = (int(tile * width), int(tile * height))
         image = PIL.Image.new("RGB", fixed, "#ff0000")
-        display.draw(image, (0, 0, fixed[0], fixed[1], tile))
+        camera = 0, 0, fixed[0], fixed[1], tile
+        for display in sprites:
+            display.draw(image, camera)
         #image = PIL.Image.open("./graphics/test/0.png")
         return image
         

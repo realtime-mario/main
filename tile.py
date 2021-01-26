@@ -29,11 +29,10 @@ class Frame:
 #            self.tiles[file.stem] = [data, PIL.Image.open(file.with_suffix('.png'))]
 
 class TileLayer(objects.Physics):
-    def __init__(self, metaset, data, location = [0, 0], velocity = [0, 0], parent = None):
+    def __init__(self, metaset, data, location = [0, 0], parent = None):
         data = rotate(data)
         self.parent = parent
         self.location = self.localpos(location)
-        self.velocity = velocity
         self.data = []
         for col in range(len(data)):
             self.data.append([])
@@ -61,10 +60,9 @@ class TileLayer(objects.Physics):
                     tile.draw(image, camera)
 
 class Tile(TileLayer):
-    def __init__(self, name, properties, image, location = [0, 0], velocity = [0, 0], parent = None):
+    def __init__(self, name, properties, image, location = [0, 0], parent = None):
         self.parent = parent
         self.location = self.localpos(location)
-        self.velocity = velocity
         self.parent = parent
         self.frames = []
         if 'per-frame' in properties:
