@@ -8,6 +8,14 @@ import math
 import json
 import time
 
+def rotate(list):
+    result = [[None] * len(list) for i in range(len(list[0]))]
+    for i in range(len(list)):
+        for j in range(len(list[0])):
+            result[j][i] = list[i][j]
+    result.reverse()
+    return result
+
 def PilImageToWxBitmap( myPilImage ):
     myWxImage = wx.Image( myPilImage.size[0], myPilImage.size[1] )
     myWxImage.SetData( myPilImage.convert( 'RGB' ).tobytes() )
@@ -47,6 +55,7 @@ class Physics:
 
 class TileLayer(Physics):
     def __init__(self, metaset, data, location = [0, 0], velocity = [0, 0], parent = None):
+        data = rotate(data)
         self.parent = parent
         self.location = self.localpos(location)
         self.velocity = velocity
@@ -54,7 +63,7 @@ class TileLayer(Physics):
         for col in range(len(data)):
             self.data.append([])
             for tile in range(len(data[col])):
-                if data == -1:self.data[-1].append(None)
+                if data[col][tile] == -1:self.data[-1].append(None)
                 else:
                     name = metaset[data[col][tile]]
                     with open('graphics/{}.json'.format(name)) as f:
@@ -64,15 +73,17 @@ class TileLayer(Physics):
     def draw(self, image, camera):
         minx = camera[0]-int(self.location[0])
         miny = camera[1]-int(self.location[1])
-        maxx = camera[0]-int(self.location[0]) + camera[2]
-        maxy = camera[1]-int(self.location[1]) + camera[3]
-        tileix = max(int(minx / 16), 0)
-        tileiy = max(int(miny / 16), 0)
-        tileax = min(int(maxx / 16), len(self.data[0])-1)
-        tileay = min(int(maxy / 16), len(self.data)-1)
+        maxx = camera[0]-int(self.location[0]) + int(camera[2] / camera[4])
+        maxy = camera[1]-int(self.location[1]) + int(camera[3] / camera[4])
+        tileix = max((minx), 0)
+        tileiy = max((miny), 0)
+        tileax = min((maxx), len(self.data[0])-1)
+        tileay = min((maxy), len(self.data)-1)
         for x in range(tileix, tileax + 1):
             for y in range(tileiy, tileay + 1):
-                self.data[x][y].draw(image, camera)
+                tile = self.data[y][x]
+                if tile != None:
+                    tile.draw(image, camera)
 
 class Tile(TileLayer):
     def __init__(self, name, properties, image, location = [0, 0], velocity = [0, 0], parent = None):
@@ -102,20 +113,51 @@ class Tile(TileLayer):
         else:
             self.delay = 1
     def draw(self, image, camera):
+        size = math.ceil(camera[4])
         minx = camera[0]-int(self.location[0])
         miny = camera[1]-int(self.location[1])
         maxx = camera[0]-int(self.location[0]) + camera[2]
         maxy = camera[1]-int(self.location[1]) + camera[3]
         frame = self.frames[int(time.time() / self.delay) % len(self.frames)]
-        scaled = frame.image.resize((camera[4], camera[4]), PIL.Image.NEAREST)
-        image.paste(scaled,
-                    (-camera[0] + camera[4] * self.location[0], -camera[1] + camera[4] * self.location[1]),
-                    scaled) # First is colour. Last is transparency. Default is full opacity everywhere.
+        scaled = frame.image.resize((size, size), PIL.Image.NEAREST)
+        try:
+            image.paste(scaled,
+                        (int(-camera[0] + camera[4] * self.location[0]),
+                         int(-camera[1] + camera[4] * self.location[1])),
+                        scaled) # First is colour. Last is transparency. Default is full opacity everywhere.
+        except ValueError:
+            image.paste(scaled,
+                        (int(-camera[0] + camera[4] * self.location[0]),
+                         int(-camera[1] + camera[4] * self.location[1])))
 
 
-display = TileLayer(['NSMBU/grass/topleft', 'NSMBU/grass/topright', 'NSMBU/grass/bottomleft', 'NSMBU/grass/bottomright'],
-                    [[0, 1],
-                     [2, 3]])
+display = TileLayer(['SMW/overworld/topleft', 'SMW/overworld/left', 'SMW/overworld/top', 'SMW/overworld/middle', 'SMW/overworld/right', 'SMW/overworld/topright', 'SMW/overworld/bottomrightconcave', 'SMW/overworld/bottomleftconcave'],
+                    [[ 1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 6, 1, 1, 1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 3, 3, 3, 3, 6, 0,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 7, 4, 4, 4, 4, 5,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 4, 5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+                     ])
 
 width = 25
 height = 15
@@ -128,7 +170,7 @@ class GameRenderer:
         tile = min(size[0] / width, size[1] / height)
         fixed = (int(tile * width), int(tile * height))
         image = PIL.Image.new("RGB", fixed, "#ff0000")
-        display.draw(image, (0, 0, fixed[0], fixed[1], int(tile)))
+        display.draw(image, (0, 0, fixed[0], fixed[1], tile))
         #image = PIL.Image.open("./graphics/test/0.png")
         return image
         
