@@ -40,9 +40,9 @@ class TileLayer(objects.Physics):
                 if data[col][tile] == -1:self.data[-1].append(None)
                 else:
                     name = metaset[data[col][tile]]
-                    with open('graphics/{}.json'.format(name)) as f:
+                    with open('resouces/{}.json'.format(name)) as f:
                         properties = json.load(f)
-                    image = PIL.Image.open('graphics/{}.png'.format(name))
+                    image = PIL.Image.open('resources/{}.png'.format(name))
                     self.data[-1].append(Tile(name, properties, image, [tile, col]))
     def draw(self, image, camera):
         minx = camera[0]-int(self.location[0])

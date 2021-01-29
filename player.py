@@ -19,7 +19,7 @@ class Mario(objects.Physics):
         self.images = []
         self.right = True
         for i in range(len(animations)):
-            self.images.append(PIL.Image.open('graphics/{}/{}/{}.png'.format(self.path, powerups[self.powerup], animations[i])))
+            self.images.append(PIL.Image.open('resources/{}/{}/{}.png'.format(self.path, powerups[self.powerup], animations[i])))
     def draw(self, image, camera):
         size = math.ceil(camera[4] * 2)
         minx = camera[0]-int(self.location[0])
