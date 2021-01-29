@@ -40,7 +40,7 @@ class TileLayer(objects.Physics):
                 if data[col][tile] == -1:self.data[-1].append(None)
                 else:
                     name = metaset[data[col][tile]]
-                    with open('resouces/{}.json'.format(name)) as f:
+                    with open('resources/{}.json'.format(name)) as f:
                         properties = json.load(f)
                     image = PIL.Image.open('resources/{}.png'.format(name))
                     self.data[-1].append(Tile(name, properties, image, [tile, col]))

@@ -18,6 +18,7 @@ class Mario(objects.Physics):
         self.animation = 0
         self.images = []
         self.right = True
+        self.gravity = 0.05
         for i in range(len(animations)):
             self.images.append(PIL.Image.open('resources/{}/{}/{}.png'.format(self.path, powerups[self.powerup], animations[i])))
     def draw(self, image, camera):
@@ -38,3 +39,8 @@ class Mario(objects.Physics):
             image.paste(scaled,
                         (int(-camera[0] + camera[4] * (self.location[0] - 1)),
                          int(-camera[1] + camera[4] * (self.location[1] - 2))))
+    def move(self, sprites):
+        self.location[0] += self.velocity[0]
+        self.location[1] += self.velocity[1]
+        self.velocity[1] += self.gravity
+        print(self.location)

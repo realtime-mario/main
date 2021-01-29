@@ -12,3 +12,5 @@ class Physics:
         globalpos = self.globalpos()
         self.parent = newparent
         self.location = self.localpos(globalpos)
+    def move(self, sprites):pass
+    def draw(self, image, camera):pass
