@@ -22,9 +22,11 @@ def Merge(*dicts):
         result.update(dict)
     return result
 
+world = objects.World()
+
 sprites = []
 
-sprites.append(tile.TileLayer(['SMW/overworld/topleft', 'SMW/overworld/left', 'SMW/overworld/top', 'SMW/overworld/middle', 'SMW/overworld/right', 'SMW/overworld/topright', 'SMW/overworld/bottomrightconcave', 'SMW/overworld/bottomleftconcave'],
+sprites.append(tile.TileLayer(world, ['SMW/overworld/topleft', 'SMW/overworld/left', 'SMW/overworld/top', 'SMW/overworld/middle', 'SMW/overworld/right', 'SMW/overworld/topright', 'SMW/overworld/bottomrightconcave', 'SMW/overworld/bottomleftconcave'],
                     [[ 1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                      [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                      [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
@@ -52,7 +54,7 @@ sprites.append(tile.TileLayer(['SMW/overworld/topleft', 'SMW/overworld/left', 'S
                      [ 4, 5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                      ]))
 
-sprites.append(player.Mario([2, 2]))
+sprites.append(player.Mario(world, [2, 2]))
 
 width = 25
 height = 15

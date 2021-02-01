@@ -9,7 +9,7 @@ powerups = 'small', 'big', 'fire',
 animations = 'idle',
 
 class Mario(objects.Physics):
-    def __init__(self, globalpos, powerup = 0, path = 'SMW/global/mario', velocity = [0, 0], parent = None):
+    def __init__(self, parent, globalpos, powerup = 0, path = 'SMW/global/mario', velocity = [0, 0]):
         self.parent = parent
         self.path = path
         self.location = self.localpos(globalpos)

@@ -30,11 +30,10 @@ class Frame:
 #            self.tiles[file.stem] = [data, PIL.Image.open(file.with_suffix('.png'))]
 
 class TileLayer(objects.Physics):
-    def __init__(self, metaset, data, location = [0, 0], parent = None):
+    def __init__(self, parent, metaset, data, location = [0, 0]):
         data = rotate(data)
         self.parent = parent
-        if self.parent == None:self.location = location
-        else:self.location = self.parent.localpos(location)
+        self.location = self.parent.localpos(location)
         self.data = []
         for col in range(len(data)):
             self.data.append([])
@@ -45,7 +44,7 @@ class TileLayer(objects.Physics):
                     with open('resources/{}.json'.format(name)) as f:
                         properties = json.load(f)
                     image = PIL.Image.open('resources/{}.png'.format(name))
-                    self.data[-1].append(Tile(name, properties, image, [tile, col], parent = self))
+                    self.data[-1].append(Tile(self, name, properties, image, [tile, col]))
     def draw(self, image, camera):
         minx, miny = self.localpos(camera[0:2])
         maxx, maxy = self.localpos((camera[0] + int(camera[2] / camera[4]), camera[1] + int(camera[3] / camera[4])))
@@ -72,11 +71,9 @@ class TileLayer(objects.Physics):
                     tile.collide(left, top, width, height)
 
 class Tile(TileLayer):
-    def __init__(self, name, properties, image, location = [0, 0], parent = None):
+    def __init__(self, parent, name, properties, image, location = [0, 0]):
         self.parent = parent
-        if self.parent == None:self.location = location
-        else:self.location = self.parent.localpos(location)
-        self.parent = parent
+        self.location = self.parent.localpos(location)
         self.frames = []
         if 'per-frame' in properties:
             width = image.size[0] / len(properties['per-frame'])
