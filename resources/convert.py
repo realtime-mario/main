@@ -12,7 +12,7 @@ def save(left, top, name):
     with open('{}/{}.json'.format(location, name), 'w') as f:
         f.write("""{
     "frames": 1,
-    "solidity": 0,
+    "solidity": 15,
     "slope": 0
 }
 """)

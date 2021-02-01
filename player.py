@@ -43,4 +43,3 @@ class Mario(objects.Physics):
         self.location[0] += self.velocity[0]
         self.location[1] += self.velocity[1]
         self.velocity[1] += self.gravity
-        print(self.location)

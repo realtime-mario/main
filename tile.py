@@ -19,6 +19,7 @@ def rotate(list):
 class Frame:
     def __init__(self, properties, image):
         self.image = image
+        self.properties = properties
 
 #class Tileset:
 #    def __init__(self, folder):
@@ -32,7 +33,8 @@ class TileLayer(objects.Physics):
     def __init__(self, metaset, data, location = [0, 0], parent = None):
         data = rotate(data)
         self.parent = parent
-        self.location = self.localpos(location)
+        if self.parent == None:self.location = location
+        else:self.location = self.parent.localpos(location)
         self.data = []
         for col in range(len(data)):
             self.data.append([])
@@ -43,12 +45,10 @@ class TileLayer(objects.Physics):
                     with open('resources/{}.json'.format(name)) as f:
                         properties = json.load(f)
                     image = PIL.Image.open('resources/{}.png'.format(name))
-                    self.data[-1].append(Tile(name, properties, image, [tile, col]))
+                    self.data[-1].append(Tile(name, properties, image, [tile, col], parent = self))
     def draw(self, image, camera):
-        minx = camera[0]-int(self.location[0])
-        miny = camera[1]-int(self.location[1])
-        maxx = camera[0]-int(self.location[0]) + int(camera[2] / camera[4])
-        maxy = camera[1]-int(self.location[1]) + int(camera[3] / camera[4])
+        minx, miny = self.localpos(camera[0:2])
+        maxx, maxy = self.localpos((camera[0] + int(camera[2] / camera[4]), camera[1] + int(camera[3] / camera[4])))
         tileix = max((minx), 0)
         tileiy = max((miny), 0)
         tileax = min((maxx), len(self.data[0])-1)
@@ -58,11 +58,24 @@ class TileLayer(objects.Physics):
                 tile = self.data[y][x]
                 if tile != None:
                     tile.draw(image, camera)
+    def collide(self, left, top, width, height):
+        minx, miny = self.localpos((left, top))
+        maxx, maxy = self.localpos((left + width, top + height))
+        tileix = max((minx), 0)
+        tileiy = max((miny), 0)
+        tileax = min((maxx), len(self.data[0])-1)
+        tileay = min((maxy), len(self.data)-1)
+        for x in range(tileix, tileax + 1):
+            for y in range(tileiy, tileay + 1):
+                tile = self.data[y][x]
+                if tile != None:
+                    tile.collide(left, top, width, height)
 
 class Tile(TileLayer):
     def __init__(self, name, properties, image, location = [0, 0], parent = None):
         self.parent = parent
-        self.location = self.localpos(location)
+        if self.parent == None:self.location = location
+        else:self.location = self.parent.localpos(location)
         self.parent = parent
         self.frames = []
         if 'per-frame' in properties:
@@ -87,10 +100,8 @@ class Tile(TileLayer):
             self.delay = 1
     def draw(self, image, camera):
         size = math.ceil(camera[4])
-        minx = camera[0]-int(self.location[0])
-        miny = camera[1]-int(self.location[1])
-        maxx = camera[0]-int(self.location[0]) + camera[2]
-        maxy = camera[1]-int(self.location[1]) + camera[3]
+        minx, miny = self.localpos(camera[0:2])
+        maxx, maxy = self.localpos((camera[0] + camera[2], camera[1] + camera[3]))
         frame = self.frames[int(time.time() / self.delay) % len(self.frames)]
         scaled = frame.image.resize((size, size), PIL.Image.NEAREST)
         try:
@@ -102,3 +113,9 @@ class Tile(TileLayer):
             image.paste(scaled,
                         (int(-camera[0] + camera[4] * self.location[0]),
                          int(-camera[1] + camera[4] * self.location[1])))
+    def collide(self, left, top, width, height):
+        solidity = self.frames[int(time.time() / self.delay) % len(self.frames)].properties['solidity']
+        if solidity == 0:return
+        minx, miny = self.localpos((left, top))
+        maxx, maxy = self.localpos((left + width, top + height))
+        
