@@ -64,11 +64,15 @@ class TileLayer(objects.Physics):
         tileiy = max((miny), 0)
         tileax = min((maxx), len(self.data[0])-1)
         tileay = min((maxy), len(self.data)-1)
+        result = [None, None, None, None]
         for x in range(tileix, tileax + 1):
             for y in range(tileiy, tileay + 1):
                 tile = self.data[y][x]
                 if tile != None:
-                    tile.collide(left, top, width, height)
+                    next = tile.collide(left, top, width, height)
+                    for i in range(4):
+                        if next[i] != None and (result[i] == None or result[i] > next[i]):result[i] = next[i]
+        return result
 
 class Tile(TileLayer):
     def __init__(self, parent, name, properties, image, location = [0, 0]):
@@ -115,4 +119,10 @@ class Tile(TileLayer):
         if solidity == 0:return
         minx, miny = self.localpos((left, top))
         maxx, maxy = self.localpos((left + width, top + height))
+        result = [None, None, None, None]
+        if solidity & 4 and maxx <= 0 and maxy > 0 and miny < 1:self.result[0] = -maxx
+        if solidity & 2 and maxy <= 0 and maxx > 0 and minx < 1:self.result[1] = -maxy
+        if solidity & 1 and minx >= 1 and maxy > 0 and miny < 1:self.result[2] = minx - 1
+        if solidity & 8 and miny >= 1 and maxx > 0 and minx < 1:self.result[3] = miny - 1
+        return result
         
