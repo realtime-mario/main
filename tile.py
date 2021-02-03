@@ -60,10 +60,11 @@ class TileLayer(objects.Physics):
     def collide(self, left, top, width, height):
         minx, miny = self.localpos((left, top))
         maxx, maxy = self.localpos((left + width, top + height))
-        tileix = max((minx), 0)
-        tileiy = max((miny), 0)
-        tileax = min((maxx), len(self.data[0])-1)
-        tileay = min((maxy), len(self.data)-1)
+        tileix = math.floor(max((minx), 0))
+        tileiy = math.floor(max((miny), 0))
+        tileax = math.ceil(min((maxx), len(self.data[0])-1))
+        tileay = math.ceil(min((maxy), len(self.data)-1))
+        print(tileax)
         result = [None, None, None, None]
         for x in range(tileix, tileax + 1):
             for y in range(tileiy, tileay + 1):

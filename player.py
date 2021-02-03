@@ -40,6 +40,36 @@ class Mario(objects.Physics):
                         (int(-camera[0] + camera[4] * (self.location[0] - 1)),
                          int(-camera[1] + camera[4] * (self.location[1] - 2))))
     def move(self, sprites):
-        self.location[0] += self.velocity[0]
-        self.location[1] += self.velocity[1]
         self.velocity[1] += self.gravity
+        collision = [None, None, None, None]
+        for sprite in sprites:
+            next = sprite.collide(self.globalpos()[0] - 0.5, self.globalpos()[1] - 1, 1, 1)
+            for i in range(4):
+                if next[i] != None and (collision[i] == None or collision[i] > next[i]):collision[i] = next[i]
+
+        velocity = self.globalvelocity()
+        if velocity[0] < 0:
+            if collision[0] != None and velocity[0] <= collision[0]:
+                self.velocity[0] = -self.parent.globalvelocity()
+                self.location[0] += collision[0]
+            else:
+                self.location[0] += velocity[0]
+        else:
+            if collision[2] != None and -velocity[0] <= collision[2]:
+                self.velocity[0] = -self.parent.globalvelocity()
+                self.location[0] -= collision[2]
+            else:
+                self.location[0] += velocity[0]
+        if velocity[1] < 0:
+            if collision[1] != None and velocity[1] <= collision[1]:
+                self.velocity[1] = -self.parent.globalvelocity()
+                self.location[1] += collision[1]
+            else:
+                self.location[1] += velocity[1]
+        else:
+            if collision[3] != None and-velocity[1] <= collision[3]:
+                self.velocity[1] = -self.parent.globalvelocity()
+                self.location[1] -= collision[2]
+            else:
+                self.location[1] += velocity[1]
+                

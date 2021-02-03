@@ -14,6 +14,7 @@ class Physics:
         self.location = self.localpos(globalpos)
     def move(self, sprites):pass
     def draw(self, image, camera):pass
+    def collide(self, left, top, width, height):return [None, None, None, None]
 
 class World(Physics):
     def localpos(self, globalpos):
