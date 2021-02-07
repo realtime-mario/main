@@ -67,10 +67,10 @@ class TileLayer(objects.Physics):
         minx, miny = self.localpos((left, top))
         #print(left,top, width, height)
         maxx, maxy = self.localpos((left + width, top + height))
-        tileix = math.floor(max((minx), 0))
-        tileiy = math.floor(max((miny), 0))
-        tileax = math.ceil(min((maxx), len(self.data[0])-1))
-        tileay = math.ceil(min((maxy), len(self.data)-1))
+        tileix = math.floor(max(minx - 1, 0))
+        tileiy = math.floor(max(miny - 1, 0))
+        tileax = math.ceil(min(maxx + 1, len(self.data[0])-1))
+        tileay = math.ceil(min(maxy + 1, len(self.data)-1))
         result = [None, None, None, None]
         #print('start', tileix, tileax, tileiy, tileay)
         for x in range(tileix, tileax + 1):
