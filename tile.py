@@ -129,9 +129,9 @@ class Tile(TileLayer):
         minx, miny = self.localpos((left, top))
         maxx, maxy = self.localpos((left + width, top + height))
         result = [None, None, None, None]
-        if solidity & 4 and maxx <= 0 and maxy > 0 and miny < 1:self.result[0] = -maxx
-        if solidity & 2 and maxy <= 0 and maxx > 0 and minx < 1:self.result[1] = -maxy
-        if solidity & 1 and minx >= 1 and maxy > 0 and miny < 1:self.result[2] = minx - 1
-        if solidity & 8 and miny >= 1 and maxx > 0 and minx < 1:self.result[3] = miny - 1
+        if solidity & 4 and maxx <= 0 and maxy > 0 and miny < 1:result[0] = -maxx
+        if solidity & 2 and maxy <= 0 and maxx > 0 and minx < 1:result[1] = -maxy
+        if solidity & 1 and minx >= 1 and maxy > 0 and miny < 1:result[2] = minx - 1
+        if solidity & 8 and miny >= 1 and maxx > 0 and minx < 1:result[3] = miny - 1
         return result
         

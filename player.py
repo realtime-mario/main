@@ -43,10 +43,10 @@ class Mario(objects.Physics):
         self.velocity[1] += self.gravity
         collision = [None, None, None, None]
         for sprite in sprites:
-            print('mario', self.location, self.globalpos([0, 0]))
             next = sprite.collide(self.globalpos()[0] - 0.5, self.globalpos()[1] - 1, 1, 1)
             for i in range(4):
                 if next[i] != None and (collision[i] == None or collision[i] > next[i]):collision[i] = next[i]
+        print(collision)
 
         velocity = self.globalvelocity()
         if velocity[0] < 0:
