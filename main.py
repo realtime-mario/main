@@ -76,7 +76,7 @@ class GameRenderer:
         size = frame.GetClientSize()
         tile = min(size[0] / width, size[1] / height)
         fixed = (int(tile * width), int(tile * height))
-        image = PIL.Image.new("RGB", fixed, "#ff0000")
+        image = PIL.Image.new("RGB", fixed, "#5c94fc")
         camera = 0, 0, fixed[0], fixed[1], tile
         for display in sprites:
             display.draw(image, camera)
@@ -107,7 +107,7 @@ class GameFrame(wx.Frame):
     def __init__(self):
         super().__init__(None, wx.ID_ANY, "Super Mario All-Stars")
 
-        #self.SetBackgroundColour(wx.BLACK)
+        self.SetBackgroundColour(wx.BLACK)
         
         panel = wx.Panel(self)
         
@@ -125,6 +125,6 @@ if __name__ == "__main__":
     frame.Show()
 
     timer = MotionTimer(frame, sprites)
-    timer.Start(33)
+    timer.Start(200)
     
     app.MainLoop()

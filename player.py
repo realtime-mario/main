@@ -12,7 +12,7 @@ class Mario(objects.Physics):
     def __init__(self, parent, globalpos, powerup = 0, path = 'SMW/global/mario', velocity = [0, 0]):
         self.parent = parent
         self.path = path
-        self.location = self.localpos(globalpos)
+        self.location = self.parent.localpos(globalpos)
         self.powerup = powerup
         self.velocity = velocity
         self.animation = 0
@@ -43,6 +43,7 @@ class Mario(objects.Physics):
         self.velocity[1] += self.gravity
         collision = [None, None, None, None]
         for sprite in sprites:
+            print('mario', self.location, self.globalpos([0, 0]))
             next = sprite.collide(self.globalpos()[0] - 0.5, self.globalpos()[1] - 1, 1, 1)
             for i in range(4):
                 if next[i] != None and (collision[i] == None or collision[i] > next[i]):collision[i] = next[i]

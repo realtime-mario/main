@@ -8,6 +8,12 @@ import PIL.ImageDraw
 import math
 import time
 
+def tint_image(im, color):
+    color_map = []
+    for component in color:
+        color_map.extend(int(component/255.0*i) for i in range(256))
+    return im.point(color_map)
+
 def rotate(list):
     result = [[None] * len(list) for i in range(len(list[0]))]
     for i in range(len(list)):
@@ -59,16 +65,18 @@ class TileLayer(objects.Physics):
                     tile.draw(image, camera)
     def collide(self, left, top, width, height):
         minx, miny = self.localpos((left, top))
+        #print(left,top, width, height)
         maxx, maxy = self.localpos((left + width, top + height))
         tileix = math.floor(max((minx), 0))
         tileiy = math.floor(max((miny), 0))
         tileax = math.ceil(min((maxx), len(self.data[0])-1))
         tileay = math.ceil(min((maxy), len(self.data)-1))
-        print(tileax)
         result = [None, None, None, None]
+        #print('start', tileix, tileax, tileiy, tileay)
         for x in range(tileix, tileax + 1):
             for y in range(tileiy, tileay + 1):
                 tile = self.data[y][x]
+                #print(x, y, tile)
                 if tile != None:
                     next = tile.collide(left, top, width, height)
                     for i in range(4):
