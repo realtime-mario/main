@@ -8,6 +8,9 @@ import math
 powerups = 'small', 'big', 'fire',
 animations = 'idle',
 
+def negate(list):
+    return [-x for x in list]
+
 class Mario(objects.Physics):
     def __init__(self, parent, globalpos, powerup = 0, path = 'SMW/global/mario', velocity = [0, 0]):
         self.parent = parent
@@ -51,25 +54,25 @@ class Mario(objects.Physics):
         velocity = self.globalvelocity()
         if velocity[0] < 0:
             if collision[0] != None and velocity[0] <= collision[0]:
-                self.velocity[0] = -self.parent.globalvelocity()
+                self.velocity[0] = negate(self.parent.globalvelocity())
                 self.location[0] += collision[0]
             else:
                 self.location[0] += velocity[0]
         else:
             if collision[2] != None and -velocity[0] <= collision[2]:
-                self.velocity[0] = -self.parent.globalvelocity()
+                self.velocity[0] = negate(self.parent.globalvelocity())
                 self.location[0] -= collision[2]
             else:
                 self.location[0] += velocity[0]
         if velocity[1] < 0:
             if collision[1] != None and velocity[1] <= collision[1]:
-                self.velocity[1] = -self.parent.globalvelocity()
+                self.velocity[1] = negate(self.parent.globalvelocity())
                 self.location[1] += collision[1]
             else:
                 self.location[1] += velocity[1]
         else:
             if collision[3] != None and-velocity[1] <= collision[3]:
-                self.velocity[1] = -self.parent.globalvelocity()
+                self.velocity[1] = negate(self.parent.globalvelocity())
                 self.location[1] -= collision[2]
             else:
                 self.location[1] += velocity[1]
