@@ -7,7 +7,8 @@ class Physics:
         if localpos == None:localpos = [0, 0]
         return self.parent.globalpos([localpos[0] + self.location[0], localpos[1] + self.location[1]])
     def globalvelocity(self):
-        return self.velocity + self.parent.globalvelocity()
+        parent = self.parent.globalvelocity()
+        return [self.velocity[0] + parent[0], self.velocity[1] + parent[1]]
     def setparent(self, newparent):
         globalpos = self.globalpos()
         self.parent = newparent

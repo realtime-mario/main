@@ -125,6 +125,6 @@ if __name__ == "__main__":
     frame.Show()
 
     timer = MotionTimer(frame, sprites)
-    timer.Start(200)
+    timer.Start(33)
     
     app.MainLoop()
