@@ -42,7 +42,7 @@ class Mario(objects.Physics):
             image.paste(scaled,
                         (int(-camera[0] + camera[4] * (self.location[0] - 1)),
                          int(-camera[1] + camera[4] * (self.location[1] - 2))))
-    def move(self, sprites):
+    def move(self, sprites, keys):
         self.velocity[1] += self.gravity
         collision = [None, None, None, None]
         for sprite in sprites:
@@ -73,6 +73,7 @@ class Mario(objects.Physics):
             if collision[1] != None and-velocity[1] <= collision[1]:
                 self.velocity[1] = -self.parent.globalvelocity()[1]
                 self.location[1] += collision[1]
+                if keys[5]:self.velocity[1] -= 1
             else:
                 self.location[1] += velocity[1]
                 

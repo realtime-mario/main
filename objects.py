@@ -13,7 +13,7 @@ class Physics:
         globalpos = self.globalpos()
         self.parent = newparent
         self.location = self.localpos(globalpos)
-    def move(self, sprites):pass
+    def move(self, sprites, keys):pass
     def draw(self, image, camera):pass
     def collide(self, left, top, width, height):return [None, None, None, None]
 

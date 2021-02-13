@@ -66,8 +66,10 @@ class MotionTimer(wx.Timer):
         self.sprites = sprites
     def Notify(self):
         for sprite in self.sprites:
-            sprite.move(self.sprites)
+            sprite.move(self.sprites, self.frame.keys)
         self.frame.Refresh()
+        self.frame.keys[5] = False
+        self.frame.keys[6] = False
 
 class GameRenderer:
     def __init__(self):
@@ -138,8 +140,6 @@ class GameFrame(wx.Frame):
         elif keycode == wx.WXK_LEFT:self.keys[2] = False
         elif keycode == wx.WXK_DOWN:self.keys[3] = False
         elif keycode == ord('S'):self.keys[4] = False # run
-        elif keycode == ord('Z'):self.keys[5] = False # jump
-        elif keycode == ord('X'):self.keys[6] = False # spin jump
         event.Skip()
         
 if __name__ == "__main__":
