@@ -1,2 +1,2 @@
 # main
-the actual engine
+Usually, if you want to make a mario level, you will use the super mario maker, lunar magic, miyamoto to generate it. This works well in many cases, but all of the elements are designed for that specific game. Unless you want to program your own elements, this can get very limiting. This is meant to be a mario game where the level editor is very customizable, hopefully meaning that anyone can make mario levels which combine different elements of mario. Ideally, enough sensors and inputs will function that any new elements can be created by the designer of the level.
