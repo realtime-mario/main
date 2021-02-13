@@ -12,7 +12,7 @@ def negate(list):
     return [-x for x in list]
 
 class Mario(objects.Physics):
-    def __init__(self, parent, globalpos, powerup = 0, path = 'SMW/global/mario', velocity = [0.2, 0]):
+    def __init__(self, parent, globalpos, powerup = 0, path = 'SMW/global/mario', velocity = [0, 0]):
         self.parent = parent
         self.path = path
         self.location = self.parent.localpos(globalpos)

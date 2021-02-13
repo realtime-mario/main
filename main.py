@@ -116,6 +116,31 @@ class GameFrame(wx.Frame):
         sizer = wx.BoxSizer()
         sizer.Add(frame, 1, wx.SHAPED | wx.ALIGN_CENTER)
         panel.SetSizer(sizer)
+
+        frame.Bind(wx.EVT_KEY_DOWN, self.onKeyDown)
+        frame.Bind(wx.EVT_KEY_UP, self.onKeyUp)
+
+        self.keys = [False, False, False, False, False, False, False]
+    def onKeyDown(self, event):
+        keycode = event.GetKeyCode()
+        if keycode == wx.WXK_RIGHT:self.keys[0] = True
+        elif keycode == wx.WXK_UP:self.keys[1] = True
+        elif keycode == wx.WXK_LEFT:self.keys[2] = True
+        elif keycode == wx.WXK_DOWN:self.keys[3] = True
+        elif keycode == ord('S'):self.keys[4] = True # run
+        elif keycode == ord('Z'):self.keys[5] = True # jump
+        elif keycode == ord('X'):self.keys[6] = True # spin jump
+        event.Skip()
+    def onKeyUp(self, event):
+        keycode = event.GetKeyCode()
+        if keycode == wx.WXK_RIGHT:self.keys[0] = False
+        elif keycode == wx.WXK_UP:self.keys[1] = False
+        elif keycode == wx.WXK_LEFT:self.keys[2] = False
+        elif keycode == wx.WXK_DOWN:self.keys[3] = False
+        elif keycode == ord('S'):self.keys[4] = False # run
+        elif keycode == ord('Z'):self.keys[5] = False # jump
+        elif keycode == ord('X'):self.keys[6] = False # spin jump
+        event.Skip()
         
 if __name__ == "__main__":
     me = Path(__file__).resolve()
