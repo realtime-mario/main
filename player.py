@@ -76,4 +76,28 @@ class Mario(objects.Physics):
                 if keys[5]:self.velocity[1] -= 1
             else:
                 self.location[1] += velocity[1]
-                
+
+        direction = 0
+
+        if keys[0]:direction += 1
+        if keys[2]:direction -= 1
+
+        acceleration = 0.01
+        deceleration = 0.05
+        friction = 0.01
+        maxspeed = 0.5
+
+        if direction == 0:
+            if abs(self.velocity[0]) < friction:self.velocity[0] = 0
+            elif self.velocity[0] > 0:self.velocity[0] -= friction
+            else:self.velocity[0] += friction
+        elif direction > 0:
+            if self.velocity[0] > 0:
+                self.velocity[0] += acceleration
+                if self.velocity[0] > maxspeed:self.velocity[0] = maxspeed
+            else:self.velocity[0] += deceleration
+        else:
+            if self.velocity[0] < 0:
+                self.velocity[0] -= acceleration
+                if -self.velocity[0] > maxspeed:self.velocity[0] = -maxspeed
+            else:self.velocity[0] -= deceleration
