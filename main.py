@@ -26,7 +26,7 @@ world = objects.World()
 
 sprites = []
 
-sprites.append(tile.TileLayer(world, ['SMW/overworld/topleft', 'SMW/overworld/left', 'SMW/overworld/top', 'SMW/overworld/middle', 'SMW/overworld/right', 'SMW/overworld/topright', 'SMW/overworld/bottomrightconcave', 'SMW/overworld/bottomleftconcave'],
+sprites.append(tile.TileLayer(world, ['SMW/overworld/topleft', 'SMW/overworld/left', 'SMW/overworld/top', 'SMW/overworld/middle', 'SMW/overworld/right', 'SMW/overworld/topright', 'SMW/overworld/bottomrightconcave', 'SMW/overworld/bottomleftconcave', 'SMW/overworld/rightcornertop', 'SMW/overworld/topbottom', 'SMW/overworld/notleft'],
                     [[ 1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                      [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                      [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
@@ -44,12 +44,12 @@ sprites.append(tile.TileLayer(world, ['SMW/overworld/topleft', 'SMW/overworld/le
                      [ 1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                      [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                      [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-                     [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                      [ 3, 6, 1, 1, 1, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                      [ 3, 3, 3, 3, 3, 6, 0,-1,-1,-1,-1,-1,-1,-1,-1],
-                     [ 3, 7, 4, 4, 4, 4, 5,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 7, 4, 4, 4, 4, 8,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1, 9,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1, 9,-1,-1,-1,-1,-1,-1,-1,-1],
+                     [ 3, 2,-1,-1,-1,-1,10,-1,-1,-1,-1,-1,-1,-1,-1],
                      [ 3, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                      [ 4, 5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                      ]))
@@ -70,6 +70,7 @@ class MotionTimer(wx.Timer):
         self.frame.Refresh()
         self.frame.keys[5] = False
         self.frame.keys[6] = False
+        self.frame.keys[7] = False
 
 class GameRenderer:
     def __init__(self):
@@ -122,7 +123,7 @@ class GameFrame(wx.Frame):
         frame.Bind(wx.EVT_KEY_DOWN, self.onKeyDown)
         frame.Bind(wx.EVT_KEY_UP, self.onKeyUp)
 
-        self.keys = [False, False, False, False, False, False, False]
+        self.keys = [False, False, False, False, False, False, False, False]
     def onKeyDown(self, event):
         keycode = event.GetKeyCode()
         if keycode == wx.WXK_RIGHT:self.keys[0] = True
@@ -130,8 +131,9 @@ class GameFrame(wx.Frame):
         elif keycode == wx.WXK_LEFT:self.keys[2] = True
         elif keycode == wx.WXK_DOWN:self.keys[3] = True
         elif keycode == ord('S'):self.keys[4] = True # run
-        elif keycode == ord('Z'):self.keys[5] = True # jump
-        elif keycode == ord('X'):self.keys[6] = True # spin jump
+        elif keycode == ord('A'):self.keys[5] = True # fireball etc
+        elif keycode == ord('Z'):self.keys[6] = True # jump
+        elif keycode == ord('X'):self.keys[7] = True # spin jump
         event.Skip()
     def onKeyUp(self, event):
         keycode = event.GetKeyCode()
@@ -150,6 +152,6 @@ if __name__ == "__main__":
     frame.Show()
 
     timer = MotionTimer(frame, sprites)
-    timer.Start(33)
+    timer.Start(17)
     
     app.MainLoop()

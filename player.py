@@ -21,7 +21,12 @@ class Mario(objects.Physics):
         self.animation = 0
         self.images = []
         self.right = True
-        self.gravity = 0.05
+        self.gravity = 0.03
+        self.acceleration = 0.005
+        self.deceleration = 0.03
+        self.friction = 0.005
+        self.maxspeed = 0.5
+        self.jump = 0.7
         for i in range(len(animations)):
             self.images.append(PIL.Image.open('resources/{}/{}/{}.png'.format(self.path, powerups[self.powerup], animations[i])))
     def draw(self, image, camera):
@@ -51,29 +56,29 @@ class Mario(objects.Physics):
                 if next[i] != None and (collision[i] == None or collision[i] > next[i]):collision[i] = next[i]
 
         velocity = self.globalvelocity()
-        if velocity[0] < 0:
-            if collision[0] != None and velocity[0] <= collision[0]:
-                self.velocity[0] = negate(self.parent.globalvelocity())
-                self.location[0] -= collision[0]
+        if velocity[0] > 0:
+            if collision[0] != None and velocity[0] > collision[0]:
+                self.velocity[0] = -self.parent.globalvelocity()[0]
+                self.location[0] += collision[0]
             else:
                 self.location[0] += velocity[0]
-        elif velocity[0] > 0:
-            if collision[2] != None and -velocity[0] <= collision[2]:
-                self.velocity[0] = negate(self.parent.globalvelocity())
-                self.location[0] += collision[2]
+        elif velocity[0] < 0:
+            if collision[2] != None and -velocity[0] > collision[2]:
+                self.velocity[0] = -self.parent.globalvelocity()[0]
+                self.location[0] -= collision[2]
             else:
                 self.location[0] += velocity[0]
         if velocity[1] < 0:
-            if collision[3] != None and velocity[1] <= collision[3]:
-                self.velocity[1] = negate(self.parent.globalvelocity())
+            if collision[3] != None and -velocity[1] > collision[3]:
+                self.velocity[1] = -self.parent.globalvelocity()[1]
                 self.location[1] -= collision[3]
             else:
                 self.location[1] += velocity[1]
         elif velocity[1] > 0:
-            if collision[1] != None and-velocity[1] <= collision[1]:
+            if collision[1] != None and velocity[1] > collision[1]:
                 self.velocity[1] = -self.parent.globalvelocity()[1]
                 self.location[1] += collision[1]
-                if keys[5]:self.velocity[1] -= 1
+                if keys[6]:self.velocity[1] -= self.jump
             else:
                 self.location[1] += velocity[1]
 
@@ -82,22 +87,17 @@ class Mario(objects.Physics):
         if keys[0]:direction += 1
         if keys[2]:direction -= 1
 
-        acceleration = 0.01
-        deceleration = 0.05
-        friction = 0.01
-        maxspeed = 0.5
-
         if direction == 0:
-            if abs(self.velocity[0]) < friction:self.velocity[0] = 0
-            elif self.velocity[0] > 0:self.velocity[0] -= friction
-            else:self.velocity[0] += friction
+            if abs(self.velocity[0]) < self.friction:self.velocity[0] = 0
+            elif self.velocity[0] > 0:self.velocity[0] -= self.friction
+            else:self.velocity[0] += self.friction
         elif direction > 0:
             if self.velocity[0] > 0:
-                self.velocity[0] += acceleration
-                if self.velocity[0] > maxspeed:self.velocity[0] = maxspeed
-            else:self.velocity[0] += deceleration
+                self.velocity[0] += self.acceleration
+                if self.velocity[0] > self.maxspeed:self.velocity[0] = self.maxspeed
+            else:self.velocity[0] += self.deceleration
         else:
             if self.velocity[0] < 0:
-                self.velocity[0] -= acceleration
-                if -self.velocity[0] > maxspeed:self.velocity[0] = -maxspeed
-            else:self.velocity[0] -= deceleration
+                self.velocity[0] -= self.acceleration
+                if -self.velocity[0] > self.maxspeed:self.velocity[0] = -self.maxspeed
+            else:self.velocity[0] -= self.deceleration
