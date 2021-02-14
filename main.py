@@ -35,7 +35,7 @@ class MotionTimer(wx.Timer):
         while i < len(self.sprites):
             if self.sprites[i].dead:
                 if isinstance(self.sprites[i], player.Mario):
-                    startlevel('levels/test/1')
+                    startlevel(self.sprites[i].world().level)
                 else:
                     self.sprites.pop(i)
                     i -= 1
