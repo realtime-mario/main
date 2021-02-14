@@ -5,12 +5,13 @@ import tile
 import player
 version = [0, 1, 0]
 def load(file):
-    with open(file) as f:data = json.load(f)
+    print('loading', file)
+    with open(file + '.json') as f:data = json.load(f)
     if data['version'][0] != version[0] or data['version'][1] > version[1]:
         print('This level was made for {}. You are currently playing on version {}.'.format(
             '.'.join(data['version']), '.'.join(version)))
     
-    world = objects.World()
+    world = objects.World(file)
     sprites = []
     for sprite in data['sprites']:
         if sprite['type'] == 'tilelayer':

@@ -22,8 +22,6 @@ def Merge(*dicts):
         result.update(dict)
     return result
 
-world, sprites = files.load('levels/test/1.json')
-
 width = 25
 height = 15
 
@@ -33,8 +31,16 @@ class MotionTimer(wx.Timer):
         self.frame = frame
         self.sprites = sprites
     def Notify(self):
-        for sprite in self.sprites:
-            sprite.move(self.sprites, self.frame.keys)
+        i = 0
+        while i < len(self.sprites):
+            if self.sprites[i].dead:
+                if isinstance(self.sprites[i], player.Mario):
+                    startlevel('levels/test/1')
+                else:
+                    self.sprites.pop(i)
+                    i -= 1
+            else:self.sprites[i].move(self.sprites, self.frame.keys)
+            i += 1
         self.frame.Refresh()
         self.frame.keys[5] = False
         self.frame.keys[6] = False
@@ -102,6 +108,7 @@ class GameFrame(wx.Frame):
         elif keycode == ord('A'):self.keys[5] = True # fireball etc
         elif keycode == ord('Z'):self.keys[6] = True # jump
         elif keycode == ord('X'):self.keys[7] = True # spin jump
+        elif keycode == ord(' '):startlevel('levels/test/1')
         event.Skip()
     def onKeyUp(self, event):
         keycode = event.GetKeyCode()
@@ -111,7 +118,17 @@ class GameFrame(wx.Frame):
         elif keycode == wx.WXK_DOWN:self.keys[3] = False
         elif keycode == ord('S'):self.keys[4] = False # run
         event.Skip()
-        
+
+timer = None
+frame = None
+
+def startlevel(file):
+    global world, sprites, timer
+    world, sprites = files.load(file)
+    if timer != None:timer.Stop()
+    timer = MotionTimer(frame, sprites)
+    timer.Start(17)
+
 if __name__ == "__main__":
     me = Path(__file__).resolve()
     
@@ -119,7 +136,6 @@ if __name__ == "__main__":
     frame = GameFrame()
     frame.Show()
 
-    timer = MotionTimer(frame, sprites)
-    timer.Start(17)
+    startlevel('levels/test/1')
     
     app.MainLoop()

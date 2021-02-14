@@ -37,6 +37,7 @@ class Frame:
 
 class TileLayer(objects.Physics):
     def __init__(self, parent, metaset, data, location = [0, 0]):
+        self.dead = False
         data = rotate(data)
         self.parent = parent
         self.location = self.parent.localpos(location)
@@ -85,6 +86,7 @@ class TileLayer(objects.Physics):
 
 class Tile(TileLayer):
     def __init__(self, parent, name, properties, image, location = [0, 0]):
+        self.dead = False
         self.parent = parent
         self.location = self.parent.localpos(location)
         self.frames = []

@@ -27,6 +27,7 @@ class Mario(objects.Physics):
         self.friction = 0.005
         self.maxspeed = 0.5
         self.jump = 0.7
+        self.dead = False
         for i in range(len(animations)):
             self.images.append(PIL.Image.open('resources/{}/{}/{}.png'.format(self.path, powerups[self.powerup], animations[i])))
     def draw(self, image, camera):
@@ -81,6 +82,8 @@ class Mario(objects.Physics):
                 if keys[6]:self.velocity[1] -= self.jump
             else:
                 self.location[1] += velocity[1]
+
+        if self.globalpos()[1] > 15:self.dead = True
 
         direction = 0
 
