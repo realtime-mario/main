@@ -21,6 +21,7 @@ class Mario(objects.Physics):
         self.animation = 0
         self.images = []
         self.right = True
+        self.speedswitches = [0.0625, 0.1445159912109375]
         self.possiblegravity = [[0.02734375 , 0.0078125    ],
                                 [0.0234375  , 0.00732421875],
                                 [0.03515625 , 0.009765625  ],
@@ -32,12 +33,22 @@ class Mario(objects.Physics):
         self.maxspeed = [0.09765625, 0.16015625]
         self.possiblejump = [0.25, 0.25, 0.3125]
         self.dead = False
+        self.ground = True
+        self.airtopspeedswitch = 0.09765625
+        self.airswitch = 0.09765625
+        self.airacceleration = [0.0023193359375, 0.00347900390625]
+        self.lowairtopspeed = 0.09765625
+        self.highairtopspeed = 0.16015625
+        self.airtopspeed = self.lowairtopspeed
+        self.airdeceleration = [None, 0.00347900390625]
+        self.airdecelerationlow = [0.0023193359375, 0.003173828125]
+        self.airdecelerationswitch = 0.11328125
         for i in range(len(animations)):
             self.images.append(PIL.Image.open('resources/{}/{}/{}.png'.format(self.path, powerups[self.powerup], animations[i])))
     def jumprange(self):
         speed = abs(self.globalvelocity()[0])
-        if speed < 0.0625:return 0
-        elif speed < 0.1445159912109375:return 1
+        if speed < self.speedswitches[0]:return 0
+        elif speed < self.speedswitches[1]:return 1
         else:return 2
     def draw(self, image, camera):
         size = math.ceil(camera[4] * 2)
@@ -66,6 +77,7 @@ class Mario(objects.Physics):
                 if next[i] != None and (collision[i] == None or collision[i] > next[i]):collision[i] = next[i]
 
         velocity = self.globalvelocity()
+        self.ground = False
         if velocity[0] > 0:
             if collision[0] != None and velocity[0] > collision[0]:
                 self.velocity[0] = -self.parent.globalvelocity()[0]
@@ -88,9 +100,14 @@ class Mario(objects.Physics):
             if collision[1] != None and velocity[1] > collision[1]:
                 self.velocity[1] = -self.parent.globalvelocity()[1]
                 self.location[1] += collision[1]
+                self.ground = True
                 if events[1]:
                     self.gravity = self.jumprange()
                     self.velocity[1] -= self.possiblejump[self.gravity]
+                    if abs(self.velocity[0]) > self.airtopspeedswitch:self.airtopspeed = self.highairtopspeed
+                    else:self.airtopspeed = self.lowairtopspeed
+                    slowdeceleration = abs(self.velocity[0]) > self.airdecelerationswitch
+                    self.airdeceleration[0] = self.airdecelerationlow[slowdeceleration]
                 else:
                     self.gravity = 3
             else:
@@ -104,16 +121,31 @@ class Mario(objects.Physics):
         if keys[2]:direction -= 1
 
         if direction == 0:
-            if abs(self.velocity[0]) < self.friction[keys[5]]:self.velocity[0] = 0
-            elif self.velocity[0] > 0:self.velocity[0] -= self.friction[keys[5]]
-            else:self.velocity[0] += self.friction[keys[5]]
+            if self.ground:
+                if abs(self.velocity[0]) < self.friction[keys[5]]:self.velocity[0] = 0
+                elif self.velocity[0] > 0:self.velocity[0] -= self.friction[keys[5]]
+                else:self.velocity[0] += self.friction[keys[5]]
         elif direction > 0:
-            if self.velocity[0] > 0:
-                self.velocity[0] += self.acceleration[keys[5]]
-                if self.velocity[0] > self.maxspeed[keys[5]]:self.velocity[0] = self.maxspeed[keys[5]]
-            else:self.velocity[0] += self.deceleration[keys[5]]
+            if self.ground:
+                if self.velocity[0] > 0:
+                    self.velocity[0] += self.acceleration[keys[5]]
+                    if self.velocity[0] > self.maxspeed[keys[5]]:self.velocity[0] = self.maxspeed[keys[5]]
+                else:self.velocity[0] += self.deceleration[keys[5]]
+            else:
+                if self.velocity[0] > 0:
+                    self.velocity[0] += self.airacceleration[self.velocity[0] > self.airswitch]
+                    if self.velocity[0] > self.airtopspeed:self.velocity[0] = self.airtopspeed
+                else:
+                    self.velocity[0] += self.airdeceleration[self.velocity[0] > self.airswitch]
         else:
-            if self.velocity[0] < 0:
-                self.velocity[0] -= self.acceleration[keys[5]]
-                if -self.velocity[0] > self.maxspeed[keys[5]]:self.velocity[0] = -self.maxspeed[keys[5]]
-            else:self.velocity[0] -= self.deceleration[keys[5]]
+            if self.ground:
+                if self.velocity[0] < 0:
+                    self.velocity[0] -= self.acceleration[keys[5]]
+                    if -self.velocity[0] > self.maxspeed[keys[5]]:self.velocity[0] = -self.maxspeed[keys[5]]
+                else:self.velocity[0] -= self.deceleration[keys[5]]
+            else:
+                if self.velocity[0] < 0:
+                    self.velocity[0] -= self.airacceleration[-self.velocity[0] > self.airswitch]
+                    if -self.velocity[0] > self.airtopspeed:self.velocity[0] = -self.airtopspeed
+                else:
+                    self.velocity[0] -= self.airdeceleration[-self.velocity[0] > self.airswitch]
