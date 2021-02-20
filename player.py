@@ -21,15 +21,24 @@ class Mario(objects.Physics):
         self.animation = 0
         self.images = []
         self.right = True
-        self.gravity = 0.03
-        self.acceleration = 0.005
-        self.deceleration = 0.03
-        self.friction = 0.005
-        self.maxspeed = 0.5
-        self.jump = 0.7
+        self.possiblegravity = [[0.02734375 , 0.0078125    ],
+                                [0.0234375  , 0.00732421875],
+                                [0.03515625 , 0.009765625  ],
+                                [0.009765625, 0.009765625  ]]
+        self.gravity = 3
+        self.acceleration = [0.0023193359375, 0.00347900390625]
+        self.deceleration = [0.00634765625, 0.00634765625]
+        self.friction = [0.003173828125, 0.003173828125]
+        self.maxspeed = [0.09765625, 0.16015625]
+        self.possiblejump = [0.25, 0.25, 0.3125]
         self.dead = False
         for i in range(len(animations)):
             self.images.append(PIL.Image.open('resources/{}/{}/{}.png'.format(self.path, powerups[self.powerup], animations[i])))
+    def jumprange(self):
+        speed = abs(self.globalvelocity()[0])
+        if speed < 0.0625:return 0
+        elif speed < 0.1445159912109375:return 1
+        else:return 2
     def draw(self, image, camera):
         size = math.ceil(camera[4] * 2)
         minx = camera[0]-int(self.location[0])
@@ -48,8 +57,8 @@ class Mario(objects.Physics):
             image.paste(scaled,
                         (int(-camera[0] + camera[4] * (self.location[0] - 1)),
                          int(-camera[1] + camera[4] * (self.location[1] - 2))))
-    def move(self, sprites, keys):
-        self.velocity[1] += self.gravity
+    def move(self, sprites, keys, events):
+        self.velocity[1] += self.possiblegravity[self.gravity][keys[6]]
         collision = [None, None, None, None]
         for sprite in sprites:
             next = sprite.collide(self.globalpos()[0] - 0.5, self.globalpos()[1] - 1, 1, 1)
@@ -79,7 +88,11 @@ class Mario(objects.Physics):
             if collision[1] != None and velocity[1] > collision[1]:
                 self.velocity[1] = -self.parent.globalvelocity()[1]
                 self.location[1] += collision[1]
-                if keys[6]:self.velocity[1] -= self.jump
+                if events[1]:
+                    self.gravity = self.jumprange()
+                    self.velocity[1] -= self.possiblejump[self.gravity]
+                else:
+                    self.gravity = 3
             else:
                 self.location[1] += velocity[1]
 
@@ -91,16 +104,16 @@ class Mario(objects.Physics):
         if keys[2]:direction -= 1
 
         if direction == 0:
-            if abs(self.velocity[0]) < self.friction:self.velocity[0] = 0
-            elif self.velocity[0] > 0:self.velocity[0] -= self.friction
-            else:self.velocity[0] += self.friction
+            if abs(self.velocity[0]) < self.friction[keys[5]]:self.velocity[0] = 0
+            elif self.velocity[0] > 0:self.velocity[0] -= self.friction[keys[5]]
+            else:self.velocity[0] += self.friction[keys[5]]
         elif direction > 0:
             if self.velocity[0] > 0:
-                self.velocity[0] += self.acceleration
-                if self.velocity[0] > self.maxspeed:self.velocity[0] = self.maxspeed
-            else:self.velocity[0] += self.deceleration
+                self.velocity[0] += self.acceleration[keys[5]]
+                if self.velocity[0] > self.maxspeed[keys[5]]:self.velocity[0] = self.maxspeed[keys[5]]
+            else:self.velocity[0] += self.deceleration[keys[5]]
         else:
             if self.velocity[0] < 0:
-                self.velocity[0] -= self.acceleration
-                if -self.velocity[0] > self.maxspeed:self.velocity[0] = -self.maxspeed
-            else:self.velocity[0] -= self.deceleration
+                self.velocity[0] -= self.acceleration[keys[5]]
+                if -self.velocity[0] > self.maxspeed[keys[5]]:self.velocity[0] = -self.maxspeed[keys[5]]
+            else:self.velocity[0] -= self.deceleration[keys[5]]

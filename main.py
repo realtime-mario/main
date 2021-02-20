@@ -39,12 +39,12 @@ class MotionTimer(wx.Timer):
                 else:
                     self.sprites.pop(i)
                     i -= 1
-            else:self.sprites[i].move(self.sprites, self.frame.keys)
+            else:self.sprites[i].move(self.sprites, self.frame.keys, self.frame.events)
             i += 1
         self.frame.Refresh()
-        self.frame.keys[5] = False
-        self.frame.keys[6] = False
-        self.frame.keys[7] = False
+        self.frame.events[0] = False
+        self.frame.events[1] = False
+        self.frame.events[2] = False
 
 class GameRenderer:
     def __init__(self):
@@ -98,16 +98,24 @@ class GameFrame(wx.Frame):
         frame.Bind(wx.EVT_KEY_UP, self.onKeyUp)
 
         self.keys = [False, False, False, False, False, False, False, False]
+        self.events = [False, False, False]
     def onKeyDown(self, event):
         keycode = event.GetKeyCode()
-        if keycode == wx.WXK_RIGHT:self.keys[0] = True
+        if keycode == wx.WXK_ESCAPE:exit()
+        elif keycode == wx.WXK_RIGHT:self.keys[0] = True
         elif keycode == wx.WXK_UP:self.keys[1] = True
         elif keycode == wx.WXK_LEFT:self.keys[2] = True
         elif keycode == wx.WXK_DOWN:self.keys[3] = True
-        elif keycode == ord('S'):self.keys[4] = True # run
-        elif keycode == ord('A'):self.keys[5] = True # fireball etc
-        elif keycode == ord('Z'):self.keys[6] = True # jump
-        elif keycode == ord('X'):self.keys[7] = True # spin jump
+        elif keycode == ord('A'):self.keys[4] = True # run
+        elif keycode == ord('S'): # powerup ability
+            self.keys[5] = True
+            self.events[0] = True
+        elif keycode == ord('Z'): # jump
+            self.keys[6] = True
+            self.events[1] = True
+        elif keycode == ord('X'): # spin jump
+            self.keys[7] = True
+            self.events[2] = True
         elif keycode == ord(' '):startlevel('levels/test/1')
         event.Skip()
     def onKeyUp(self, event):
@@ -116,7 +124,10 @@ class GameFrame(wx.Frame):
         elif keycode == wx.WXK_UP:self.keys[1] = False
         elif keycode == wx.WXK_LEFT:self.keys[2] = False
         elif keycode == wx.WXK_DOWN:self.keys[3] = False
-        elif keycode == ord('S'):self.keys[4] = False # run
+        elif keycode == ord('A'):self.keys[4] = False # run
+        elif keycode == ord('S'):self.keys[5] = False # powerup ability
+        elif keycode == ord('Z'):self.keys[6] = False # jump
+        elif keycode == ord('X'):self.keys[7] = False # spin jump
         event.Skip()
 
 timer = None
