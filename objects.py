@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+from pathlib import Path
+import PIL
+import PIL.Image
+import time
 class Physics:
     def __init__(self):
         self.dead = False
@@ -33,3 +37,33 @@ class World(Physics):
     def setparent(self, newparent):
         raise TypeError('The world cannot have a parent.')
     def world(self):return self
+
+loaded = 0
+
+def openimage(file):
+    global loaded
+    image = PIL.Image.open(file)
+    copy = image.copy()
+    image.close()
+    loaded += 1
+    print('({}) loading {}'.format(loaded, file))
+    return copy
+
+class Animation:
+    def __init__(self, location):
+        if Path(location + '.png').is_file():
+            self.delay = 1000
+            self.images = [openimage(location + '.png')]
+        else:
+            with open(location + '.txt') as f:self.delay = int(f.read())
+            self.images = []
+            i = 1
+            while True:
+                file = '{}{}.png'.format(location, i)
+                if Path(file).is_file():self.images.append(openimage(file))
+                else:break
+                i += 1
+    def image(self):
+        miliseconds = time.time() * 1000
+        frame = int(miliseconds // self.delay)
+        return self.images[frame % len(self.images)]

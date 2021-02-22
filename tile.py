@@ -27,14 +27,6 @@ class Frame:
         self.image = image
         self.properties = properties
 
-#class Tileset:
-#    def __init__(self, folder):
-#        self.folder = Path(folder.resolve())
-#        self.tiles = {}
-#        for file in self.folder.glob('*.json'):
-#            with open(file) as f:data = json.load(f)
-#            self.tiles[file.stem] = [data, PIL.Image.open(file.with_suffix('.png'))]
-
 class TileLayer(objects.Physics):
     def __init__(self, parent, metaset, data, location = [0, 0]):
         self.dead = False
@@ -50,7 +42,7 @@ class TileLayer(objects.Physics):
                     name = metaset[data[col][tile]]
                     with open('resources/{}.json'.format(name)) as f:
                         properties = json.load(f)
-                    image = PIL.Image.open('resources/{}.png'.format(name))
+                    image = objects.openimage('resources/{}.png'.format(name))
                     self.data[-1].append(Tile(self, name, properties, image, [tile, col]))
     def draw(self, image, camera):
         minx, miny = self.localpos(camera[0:2])
