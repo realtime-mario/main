@@ -6,7 +6,7 @@ import PIL.Image
 import math
 
 powerups = 'small', 'big', 'fire',
-animations = 'idle',
+animations = 'idle', 'run', 'walk', 'jump', 'fall', 'fastjump', 'spinjump', 'crouch', 'up', 'stop', 'fastfall'
 
 def negate(list):
     return [-x for x in list]
@@ -18,8 +18,7 @@ class Mario(objects.Physics):
         self.location = self.parent.localpos(globalpos)
         self.powerup = powerup
         self.velocity = velocity
-        self.animation = 0
-        self.images = []
+        self.animation = 'idle'
         self.right = True
         self.speedswitches = [0.0625, 0.1445159912109375]
         self.possiblegravity = [[0.02734375 , 0.0078125    ],
@@ -43,8 +42,11 @@ class Mario(objects.Physics):
         self.airdeceleration = [None, 0.00347900390625]
         self.airdecelerationlow = [0.0023193359375, 0.003173828125]
         self.airdecelerationswitch = 0.11328125
-        for i in range(len(animations)):
-            self.images.append(PIL.Image.open('resources/{}/{}/{}.png'.format(self.path, powerups[self.powerup], animations[i])))
+        self.setimages()
+    def setimages(self):
+        self.images = {}
+        for animation in animations:
+            self.images[animation] = PIL.Image.open('resources/{}/{}/{}.png'.format(self.path, powerups[self.powerup], animation))
     def jumprange(self):
         speed = abs(self.globalvelocity()[0])
         if speed < self.speedswitches[0]:return 0
