@@ -59,7 +59,7 @@ class Mario(objects.Physics):
         maxx = camera[0]-int(self.location[0]) + camera[2]
         maxy = camera[1]-int(self.location[1]) + camera[3]
         scaled = self.images[self.animation].image().resize((size, size), PIL.Image.NEAREST)
-        if self.right:
+        if not self.right:
             scaled = scaled.transpose(PIL.Image.FLIP_LEFT_RIGHT)
         try:
             image.paste(scaled,
@@ -122,16 +122,16 @@ class Mario(objects.Physics):
 
         if direction == 0:
             if self.ground:
-                if abs(self.velocity[0]) < self.friction[keys[5]]:self.velocity[0] = 0
-                elif self.velocity[0] > 0:self.velocity[0] -= self.friction[keys[5]]
-                else:self.velocity[0] += self.friction[keys[5]]
+                if abs(self.velocity[0]) < self.friction[keys[4]]:self.velocity[0] = 0
+                elif self.velocity[0] > 0:self.velocity[0] -= self.friction[keys[4]]
+                else:self.velocity[0] += self.friction[keys[4]]
         elif direction > 0:
-            self.right = False
+            self.right = True
             if self.ground:
                 if self.velocity[0] > 0:
-                    self.velocity[0] += self.acceleration[keys[5]]
-                    if self.velocity[0] > self.maxspeed[keys[5]]:self.velocity[0] = self.maxspeed[keys[5]]
-                else:self.velocity[0] += self.deceleration[keys[5]]
+                    self.velocity[0] += self.acceleration[keys[4]]
+                    if self.velocity[0] > self.maxspeed[keys[4]]:self.velocity[0] = self.maxspeed[keys[4]]
+                else:self.velocity[0] += self.deceleration[keys[4]]
             else:
                 if self.velocity[0] > 0:
                     self.velocity[0] += self.airacceleration[self.velocity[0] > self.airswitch]
@@ -139,12 +139,12 @@ class Mario(objects.Physics):
                 else:
                     self.velocity[0] += self.airdeceleration[self.velocity[0] > self.airswitch][self.airdecelerationnow]
         else:
-            self.right = True
+            self.right = False
             if self.ground:
                 if self.velocity[0] < 0:
-                    self.velocity[0] -= self.acceleration[keys[5]]
-                    if -self.velocity[0] > self.maxspeed[keys[5]]:self.velocity[0] = -self.maxspeed[keys[5]]
-                else:self.velocity[0] -= self.deceleration[keys[5]]
+                    self.velocity[0] -= self.acceleration[keys[4]]
+                    if -self.velocity[0] > self.maxspeed[keys[4]]:self.velocity[0] = -self.maxspeed[keys[4]]
+                else:self.velocity[0] -= self.deceleration[keys[4]]
             else:
                 if self.velocity[0] < 0:
                     self.velocity[0] -= self.airacceleration[-self.velocity[0] > self.airswitch]
@@ -153,6 +153,9 @@ class Mario(objects.Physics):
                     self.velocity[0] -= self.airdeceleration[-self.velocity[0] > self.airswitch][self.airdecelerationnow]
 
         if self.ground:
-            if self.velocity[0] == 0:self.animation = 'idle'
-            if abs(self.velocity[0]) < self.airswitch:self.animation = 'walk'
-            else:self.animation = 'run'
+            if self.velocity[0] == 0:
+                self.animation = 'idle'
+            elif abs(self.velocity[0]) <= self.maxspeed[0]:
+                self.animation = 'walk'
+            else:
+                self.animation = 'run'

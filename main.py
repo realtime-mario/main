@@ -106,14 +106,14 @@ class GameFrame(wx.Frame):
         elif keycode == wx.WXK_UP:self.keys[1] = True
         elif keycode == wx.WXK_LEFT:self.keys[2] = True
         elif keycode == wx.WXK_DOWN:self.keys[3] = True
-        elif keycode == ord('A'):self.keys[4] = True # run
-        elif keycode == ord('S'): # powerup ability
+        elif keycode == ord('Z'):self.keys[4] = True # run
+        elif keycode == ord('X') and not self.keys[5]: # powerup ability
             self.keys[5] = True
             self.events[0] = True
-        elif keycode == ord('Z'): # jump
+        elif keycode == ord('A') and not self.keys[6]: # jump
             self.keys[6] = True
             self.events[1] = True
-        elif keycode == ord('X'): # spin jump
+        elif keycode == ord('S') and not self.keys[7]: # spin jump
             self.keys[7] = True
             self.events[2] = True
         elif keycode == ord(' '):startlevel('levels/test/1')
@@ -124,10 +124,10 @@ class GameFrame(wx.Frame):
         elif keycode == wx.WXK_UP:self.keys[1] = False
         elif keycode == wx.WXK_LEFT:self.keys[2] = False
         elif keycode == wx.WXK_DOWN:self.keys[3] = False
-        elif keycode == ord('A'):self.keys[4] = False # run
-        elif keycode == ord('S'):self.keys[5] = False # powerup ability
-        elif keycode == ord('Z'):self.keys[6] = False # jump
-        elif keycode == ord('X'):self.keys[7] = False # spin jump
+        elif keycode == ord('Z'):self.keys[4] = False # run
+        elif keycode == ord('X'):self.keys[5] = False # powerup ability
+        elif keycode == ord('A'):self.keys[6] = False # jump
+        elif keycode == ord('S'):self.keys[7] = False # spin jump
         event.Skip()
 
 timer = None
