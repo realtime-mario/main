@@ -58,7 +58,7 @@ class Mario(objects.Physics):
         miny = camera[1]-int(self.location[1])
         maxx = camera[0]-int(self.location[0]) + camera[2]
         maxy = camera[1]-int(self.location[1]) + camera[3]
-        scaled = self.images[self.animation].image().resize((size, size), PIL.Image.NEAREST)
+        scaled = self.images[self.animation].image().convert("RGBA").resize((size, size), PIL.Image.NEAREST)
         if not self.right:
             scaled = scaled.transpose(PIL.Image.FLIP_LEFT_RIGHT)
         try:
