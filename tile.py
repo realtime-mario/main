@@ -118,8 +118,7 @@ class Tile(TileLayer):
                         (int(-camera[0] + camera[4] * self.location[0]),
                          int(-camera[1] + camera[4] * self.location[1])))
     def collide(self, left, top, width, height):
-        solidity = self.frames[int(time.time() / self.delay) % len(self.frames)].properties['solidity']
-        if solidity == 0:return
+        solidity = self.frames[int(time.time() / self.delay) % len(self.frames)].properties.get('solidity', 0)
         minx, miny = self.localpos((left, top))
         maxx, maxy = self.localpos((left + width, top + height))
         result = [None, None, None, None]
