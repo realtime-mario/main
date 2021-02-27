@@ -151,11 +151,21 @@ class Mario(objects.Physics):
                     if -self.velocity[0] > self.airtopspeed[self.passedairswitch]:self.velocity[0] = -self.airtopspeed[self.passedairswitch]
                 else:
                     self.velocity[0] -= self.airdeceleration[-self.velocity[0] > self.airswitch][self.airdecelerationnow]
-
+        self.animate(keys)
+                    
+    def animate(self, keys):
         if self.ground:
             if self.velocity[0] == 0:
                 self.animation = 'idle'
             elif abs(self.velocity[0]) <= self.maxspeed[0]:
-                self.animation = 'walk'
+                if keys[5]:self.animation = 'startrun'
+                else:self.animation = 'walk'
             else:
                 self.animation = 'run'
+        else:
+            if self.passedairswitch:
+                if self.velocity[1] > 0:self.animation = 'fastfall'
+                else:self.animation = 'fastjump'
+            else:
+                if self.velocity[1] > 0:self.animation = 'fall'
+                else:self.animation = 'jump'

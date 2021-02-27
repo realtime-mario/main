@@ -1,4 +1,5 @@
 {
     "delay": 180,
-    "frames": 4
+    "frames": 4,
+    "solidity": 0
 }
