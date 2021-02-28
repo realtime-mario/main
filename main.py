@@ -10,6 +10,35 @@ import time
 import objects
 import files
 import player
+import wx.adv
+from pydub import AudioSegment
+
+def runmusic(file):
+    print(file)
+    sound = AudioSegment.from_mp3(src).export(format="wav")
+    while True:
+        playsound(file)
+
+def convert(file):
+    wav = AudioSegment.from_mp3(file).export(format="wav")
+    wav.seek(0)
+    sound = wx.adv.Sound()
+    sound.CreateFromData(wav.read())
+    return sound
+    
+def startsound(sound):
+    convert(sound).Play(wx.adv.SOUND_ASYNC)
+
+music = None
+
+def setmusic(sound):
+    global music
+    if music != None:music.Stop()
+    if sound == None:music = None
+    else:
+        music = convert(sound)
+        music.Play(wx.adv.SOUND_ASYNC | wx.adv.SOUND_LOOP)
+
 
 def PilImageToWxBitmap( myPilImage ):
     myWxImage = wx.Image( myPilImage.size[0], myPilImage.size[1] )
@@ -136,6 +165,7 @@ frame = None
 def startlevel(file):
     global world, sprites, timer
     world, sprites = files.load(file)
+    setmusic('resources/{}.mp3'.format(world.music))
     if timer != None:timer.Stop()
     timer = MotionTimer(frame, sprites)
     timer.Start(17)

@@ -1,6 +1,7 @@
 {
     "version": [0, 1, 0],
     "mariostart": [2, 2],
+    "music": "SMW/overworld/music",
     "sprites": [
 	{
 	    "type": "tilelayer",

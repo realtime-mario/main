@@ -25,7 +25,8 @@ class Physics:
     def world(self):return self.parent.world()
 
 class World(Physics):
-    def __init__(self, level):
+    def __init__(self, level, music):
+        self.music = music
         self.level = level
         self.dead = False
     def localpos(self, globalpos):

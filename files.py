@@ -9,8 +9,11 @@ def load(file):
     if data['version'][0] != version[0] or data['version'][1] > version[1]:
         print('This level was made for {}. You are currently playing on version {}.'.format(
             '.'.join(data['version']), '.'.join(version)))
-    
-    world = objects.World(file)
+
+    if 'music' in data:music = data['music']
+    else:music = None
+        
+    world = objects.World(file, music)
     sprites = []
     for sprite in data['sprites']:
         if sprite['type'] == 'tilelayer':
